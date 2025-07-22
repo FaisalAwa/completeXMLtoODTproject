@@ -12,14 +12,20 @@ Configuration settings for the ODT processor application.
 
 import streamlit as st
 import toml
+import os
 
-# Load secrets from secrets.toml
-secrets = toml.load(".streamlit/secrets.toml")
-
-# API Settings
-GEMINI_API_KEY = secrets['general']['GEMINI_API_KEY']
-ANTHROPIC_API_KEY = secrets['general']['ANTHROPIC_API_KEY']
-GEMINI_MODEL = secrets['general']['GEMINI_MODEL']
+# Try to load secrets from .streamlit/secrets.toml
+try:
+    secrets = toml.load(".streamlit/secrets.toml")
+    # API Settings from local secrets
+    GEMINI_API_KEY = secrets['general']['GEMINI_API_KEY']
+    ANTHROPIC_API_KEY = secrets['general']['ANTHROPIC_API_KEY']
+    GEMINI_MODEL = secrets['general']['GEMINI_MODEL']
+except (FileNotFoundError, KeyError):
+    # Fall back to Streamlit Cloud secrets
+    GEMINI_API_KEY = st.secrets['general']['GEMINI_API_KEY']
+    ANTHROPIC_API_KEY = st.secrets['general']['ANTHROPIC_API_KEY']
+    GEMINI_MODEL = st.secrets['general']['GEMINI_MODEL']
 
 # Question Types
 QUESTION_TYPES = [

@@ -1,185 +1,3 @@
-# import streamlit as st
-# from streamlit_lottie import st_lottie
-# import requests
-# import streamlit_authenticator as stauth
-# import yaml
-# from yaml.loader import SafeLoader
-# from app import main as app_main
-# import bcrypt
-
-# # Set wide layout
-# st.set_page_config(page_title="ODT to XML Processor", layout="wide")
-
-# # --- LOTTIE ANIMATION LOADER ---
-# def load_lottieurl(url: str):
-#     r = requests.get(url)
-#     if r.status_code != 200:
-#         return None
-#     return r.json()
-
-# # Lottie animation URLs (you can change these to any Lottie you like)
-# LOTTIE_LOGIN = "https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json"  # Modern login animation
-# LOTTIE_USER = "https://assets2.lottiefiles.com/packages/lf20_ktwnwv5m.json"   # User creation animation
-
-# # --- CONFIG and AUTHENTICATOR SETUP ---
-# with open('config.yaml', 'r') as file:
-#     config = yaml.load(file, Loader=SafeLoader)
-
-# authenticator = stauth.Authenticate(
-#     config['credentials'],
-#     config['cookie']['name'],
-#     config['cookie']['key'],
-#     config['cookie']['expiry_days']
-# )
-
-# # --- PAGE STATE MANAGEMENT ---
-# if 'page' not in st.session_state:
-#     st.session_state.page = 'login'
-
-# def go_to_create_user():
-#     st.session_state.page = 'create_user'
-
-# def go_to_login():
-#     st.session_state.page = 'login'
-
-# # --- BEAUTIFUL LOGIN FORM ---
-# def login_form():
-#     st.markdown("""
-#         <style>
-#         .main-login-card {
-#             background: #f8fafc;
-#             border-radius: 18px;
-#             box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
-#             padding: 2.5rem 2rem 2rem 2rem;
-#             max-width: 600px;
-#             margin: 2rem auto 1rem auto;
-#         }
-#         .stButton>button {
-#             background: linear-gradient(90deg, #4f8cff 0%, #235390 100%);
-#             color: white;
-#             border-radius: 8px;
-#             font-weight: 600;
-#             padding: 0.5rem 2rem;
-#         }
-#         .stTextInput>div>div>input {
-#             background: #f1f5f9;
-#             border-radius: 8px;
-#         }
-#         </style>
-#     """, unsafe_allow_html=True)
-    
-#     with st.container():
-#         st_lottie(load_lottieurl(LOTTIE_LOGIN), height=180, key="login-lottie")
-#         st.markdown('<div class="main-login-card">', unsafe_allow_html=True)
-#         st.header("Login")
-#         authenticator.login()
-#         st.markdown('</div>', unsafe_allow_html=True)
-#         if st.session_state.get("authentication_status") is False:
-#             st.error('Username/password is incorrect')
-#         elif st.session_state.get("authentication_status") is None:
-#             st.warning('Please enter your username and password')
-#         st.button("Add New User", on_click=go_to_create_user)
-
-# # --- BEAUTIFUL USER CREATION FORM ---
-# def create_user_page():
-#     st.markdown("""
-#         <style>
-#         .main-user-card {
-#             background: #f8fafc;
-#             border-radius: 18px;
-#             box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
-#             padding: 2.5rem 2rem 2rem 2rem;
-#             max-width: 650px;
-#             margin: 2rem auto 1rem auto;
-#         }
-#         .stButton>button {
-#             background: linear-gradient(90deg, #4f8cff 0%, #235390 100%);
-#             color: white;
-#             border-radius: 8px;
-#             font-weight: 600;
-#             padding: 0.5rem 2rem;
-#         }
-#         .stTextInput>div>div>input {
-#             background: #f1f5f9;
-#             border-radius: 8px;
-#         }
-#         </style>
-#     """, unsafe_allow_html=True)
-#     st_lottie(load_lottieurl(LOTTIE_USER), height=180, key="user-lottie")
-#     st.markdown('<div class="main-user-card">', unsafe_allow_html=True)
-#     st.header("Create New User")
-#     st.write("This action requires admin privileges.")
-#     with st.form("new_user_form", clear_on_submit=False):
-#         st.markdown("##### Admin Credentials")
-#         admin_username_input = st.text_input("Your Admin Username").strip()
-#         admin_password_input = st.text_input("Your Admin Password", type="password")
-#         st.markdown("---")
-#         st.markdown("##### New User Details")
-#         new_username = st.text_input("New Username").strip()
-#         new_first_name = st.text_input("First Name").strip()
-#         new_last_name = st.text_input("Last Name").strip()
-#         new_email = st.text_input("Email").strip()
-#         new_password = st.text_input("New Password", type="password")
-#         submitted = st.form_submit_button("Create User")
-#         if submitted:
-#             is_admin_valid = False
-#             # Case-insensitive admin user lookup
-#             found_admin_key = None
-#             for key in config['credentials']['usernames']:
-#                 if key.lower() == admin_username_input.lower():
-#                     found_admin_key = key
-#                     break
-#             admin_data = config['credentials']['usernames'].get(found_admin_key)
-#             if admin_data:
-#                 if 'admin' in admin_data.get('roles', []):
-#                     hashed_pw_from_config = admin_data['password']
-#                     if bcrypt.checkpw(admin_password_input.encode(), hashed_pw_from_config.encode()):
-#                         is_admin_valid = True
-#                     else:
-#                         st.error("Incorrect admin password.")
-#                 else:
-#                     st.error(f"User '{admin_username_input}' does not have admin privileges.")
-#             else:
-#                 st.error(f"Admin user '{admin_username_input}' not found.")
-#             if is_admin_valid:
-#                 if new_username and new_password and new_email:
-#                     if new_username in config['credentials']['usernames']:
-#                         st.error(f"Username '{new_username}' already exists.")
-#                     else:
-#                         temp_creds = {'usernames': {new_username: {'password': new_password}}}
-#                         hashed_creds = stauth.Hasher.hash_passwords(temp_creds)
-#                         hashed_password = hashed_creds['usernames'][new_username]['password']
-#                         config["credentials"]["usernames"][new_username] = {
-#                             "email": new_email, "failed_login_attempts": 0,
-#                             "first_name": new_first_name, "last_name": new_last_name,
-#                             "logged_in": False, "password": hashed_password,
-#                             "roles": ["viewer"]
-#                         }
-#                         with open('config.yaml', 'w') as file:
-#                             yaml.dump(config, file, default_flow_style=False)
-#                         st.success(f"User '{new_username}' created successfully!")
-#                         st.info("Click 'Back to Login' to continue.")
-#                 else:
-#                     st.error("Please fill out all fields for the new user.")
-#     st.markdown('</div>', unsafe_allow_html=True)
-#     st.button("Back to Login", on_click=go_to_login)
-
-# # --- PAGE ROUTING ---
-# if st.session_state.get('authentication_status'):
-#     authenticator.logout()
-#     st.write(f'Welcome *{st.session_state["name"]}*')
-#     app_main()
-# else:
-#     if st.session_state.page == 'login':
-#         login_form()
-#     elif st.session_state.page == 'create_user':
-#         create_user_page()
-
-
-
-
-
-
 import streamlit as st
 from streamlit_lottie import st_lottie
 import requests
@@ -188,6 +6,7 @@ import yaml
 from yaml.loader import SafeLoader
 from app import main as app_main
 import bcrypt
+from modules.auth_helpers import get_auth_config
 
 # Set wide layout
 st.set_page_config(page_title="ODT to XML Processor", layout="wide")
@@ -204,8 +23,7 @@ LOTTIE_LOGIN = "https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json"  # 
 LOTTIE_USER = "https://assets2.lottiefiles.com/packages/lf20_ktwnwv5m.json"   # User creation animation
 
 # --- CONFIG and AUTHENTICATOR SETUP ---
-with open('config.yaml', 'r') as file:
-    config = yaml.load(file, Loader=SafeLoader)
+config = get_auth_config()
 
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -454,3 +272,5 @@ else:
         login_form()
     elif st.session_state.page == 'create_user':
         create_user_page()
+
+
