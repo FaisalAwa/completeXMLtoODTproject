@@ -26,13 +26,14 @@ ENV/
 env/
 
 # Streamlit secrets
-.streamlit/secrets.toml
+Secrets/secrets.toml
 
 # Credentials
-config.yaml
-
 new.md
 
+Home.py
+
+utils/db_connection.py
 # IDE specific files
 .idea/
 .vscode/
@@ -47,3 +48,7 @@ logs/
 # Local development
 .env
 .env.local
+
+
+
+

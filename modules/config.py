@@ -4,7 +4,7 @@
 # - AnswerOptionImage: Answer option images for processing  
 # - JustDropDown: Special dropdown images
 # - PositionedImage: Positioned element images
-# - BackgroundImage: Background images for positioned questions (ContentType: BImage)  ← ADD THIS
+# - BackgroundImage: Background images for positioned questions (ContentType: BImage)
 
 """
 Configuration settings for the ODT processor application.
@@ -14,7 +14,8 @@ import streamlit as st
 import toml
 import os
 
-# Try to load secrets from .streamlit/secrets.toml
+# Try to load secrets from Secrets/secrets.toml
+
 try:
     secrets = toml.load(".streamlit/secrets.toml")
     # API Settings from local secrets
@@ -37,7 +38,7 @@ QUESTION_TYPES = [
     "FILLINTHEBLANK",
     "SIMULATION",
     "POSITIONEDDROPDOWN",
-    "POSITIONEDDRAGDROP"  # ← ADD THIS NEW TYPE
+    "POSITIONEDDRAGDROP"  
 ]
 
 # API Retry Settings
