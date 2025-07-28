@@ -26,7 +26,7 @@ ENV/
 env/
 
 # Streamlit secrets
-Secrets/secrets.toml
+.streamlit/secrets.toml
 
 # Credentials
 new.md
